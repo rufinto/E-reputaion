@@ -1,5 +1,6 @@
 import pandas as pd
 
-doc = pd.read_csv("FR-L-PS-MIGR-TWIT-2019.csv")
+dataset_name = "FR-L-MIGR-TWIT-2011-2022.csv"
+dataset = pd.read_csv(dataset_name)
 
-print(doc.head())
+print(dataset.head())
