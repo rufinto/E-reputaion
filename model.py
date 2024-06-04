@@ -53,3 +53,4 @@ lemmatized_sac_de_mots = [lemmatizer.lemmatize(word) for word in filtered_sac_de
 
 tf = FreqDist(lemmatized_sac_de_mots)
 print(tf.most_common(50), len(tf))
+
