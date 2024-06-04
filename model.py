@@ -11,6 +11,7 @@ from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 from nltk import FreqDist
 
+#####################################################################################
 #lecture du dataset et etiquetage
 
 dataset_name = "FR-L-MIGR-TWIT-2011-2022.csv"
@@ -33,6 +34,8 @@ def print_tweet(X, debut, fin):
         print(f"{i+1}) {X[i]}\n\n")
 
 print_tweet(X, debut=1, fin=100)
+
+#####################################################################################
 #creation corpus
 
 """
@@ -41,13 +44,14 @@ for tweet in dataset[colums[1]]:
     corpus += tweet
 
 """
-
+#####################################################################################
 #Tokenization
     
 """
 sac_de_mots = word_tokenize(corpus)
 """
 
+#####################################################################################
 #filtration
 
 """
@@ -68,6 +72,7 @@ def retire_site_web(liste):
 retire_site_web(filtered_sac_de_mots)
 """
 
+#####################################################################################
 #lemmatisation
 
 """
@@ -75,6 +80,7 @@ lemmatizer = WordNetLemmatizer()
 lemmatized_sac_de_mots = [lemmatizer.lemmatize(word, ) for word in filtered_sac_de_mots]
 """
 
+#####################################################################################
 #calcul tf
 
 """
