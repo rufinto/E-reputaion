@@ -1,5 +1,6 @@
 import pandas as pd
 import sklearn
+import numpy as np 
 
 import nltk
 nltk.download('punkt')
@@ -17,6 +18,10 @@ nbr_tweets = len(dataset[colums[0]])
 
 #trainset = sklearn.
 #print(nbr_tweets)
+n = 100
+samples = [dataset[colums[1]][i] for i in range(n)]
+print(samples[0])
+tagets = []
 
 #creation corpus
 corpus = ""
@@ -49,9 +54,9 @@ retire_site_web(filtered_sac_de_mots)
 
 #lemmatisation
 lemmatizer = WordNetLemmatizer()
-lemmatized_sac_de_mots = [lemmatizer.lemmatize(word) for word in filtered_sac_de_mots]
+#lemmatized_sac_de_mots = [lemmatizer.lemmatize(word, ) for word in filtered_sac_de_mots]
 
 #calcul tf
 
-tf = FreqDist(lemmatized_sac_de_mots)
-print(tf.most_common(50), len(tf))
+#tf = FreqDist(lemmatized_sac_de_mots)
+#print(tf.most_common(50), len(tf))
