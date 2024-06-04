@@ -2,15 +2,13 @@ import pandas as pd
 import sklearn
 
 import nltk
-nltk.download('punkt')
-nltk.download("stopwords")
-nltk.download('wordnet')
+
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 from nltk import FreqDist
 
-dataset_name = "FR_L_MIGR_TWIT_2011_2022.csv"
+dataset_name = "FR-L-MIGR-TWIT-2011-2022.csv"
 dataset = pd.read_csv(dataset_name, sep=";")
 colums = ["data__id", "data__text", "data__created_at", "author__username"]
 nbr_tweets = len(dataset[colums[0]])
