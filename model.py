@@ -25,15 +25,15 @@ n = 300
 np.random.seed(100) #permet de fixer toutes expériences aléatoires éffectuées avec random afin que le résultat reste le même afin chaque exécution
 tweets_Id = np.random.choice(dataset_lenght, n, replace=False)
 X = [dataset[columns[1]][i] for i in tweets_Id]
-Y = ["1 à 100",
-     "101 à 200", 0, -0.3, -0.2, 0, -1, -0.5, -0.8, 0.8, -0.6, -0.4, -0.6, -0.5, -0.7,113 -0.8, -0.4, -0.6
+Y = ["1 à 100", 
+     "101 à 200", 
      "201 à 300"]
 
 def print_tweet(X, debut, fin):
     for i in range(debut-1, fin):
         print(f"{i+1}) {X[i]}\n\n")
 
-print_tweet(X, debut=101, fin=200)
+print_tweet(X, debut=1, fin=100)
 
 #####################################################################################
 #creation corpus
