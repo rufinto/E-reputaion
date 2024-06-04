@@ -25,7 +25,7 @@ n = 300
 np.random.seed(100) #permet de fixer toutes expériences aléatoires éffectuées avec random afin que le résultat reste le même afin chaque exécution
 tweets_Id = np.random.choice(dataset_lenght, n, replace=False)
 X = [dataset[columns[1]][i] for i in tweets_Id]
-Y = ["1 à 100",
+Y = ["1 à 100",1,
      "101 à 200", 
      "201 à 300"]
 
