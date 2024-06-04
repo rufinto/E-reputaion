@@ -11,46 +11,28 @@ from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 from nltk import FreqDist
 
-dataset_Aubry = pd.read_csv("FR-L-Aubry-MIGR-TWIT-2022.csv", sep=";") #1
-dataset_Autain = pd.read_csv("FR-L-Autain-MIGR-TWIT-2022.csv", sep=";") #2
-dataset_Corbiere = pd.read_csv("FR-L-Corbière-MIGR-TWIT-2022.csv", sep=";") #3 
-dataset_Glucksmann = pd.read_csv("FR-L-Glucksmann-MIGR-TWIT-2019.csv", sep=";") #4 
-dataset_GRS = pd.read_csv("FR-L-GRS-MIGR-TWIT-2018.csv", sep=";") #5
-dataset_Hollande = pd.read_csv("FR-L-Hollande-MIGR-TWIT-2021.csv", sep=";") #6 
-dataset_Melonchon = pd.read_csv("FR-L-Mélenchon-MIGR-TWIT-2022.csv", sep=";") #7
-dataset_Ruffin = pd.read_csv("FR-L-Ruffin-MIGR-TWIT-2021.csv", sep=";") #8
- 
-colums = ["data__id", "data__text", "data__created_at", "author__username"]
+#lecture du dataset et etiquetage
 
-n = 50
-
-X_Aubry = np.random.RandomState.choice([dataset_Aubry[colums[1]][i] for i in range(n)], n, replace=False)
-Y_Aubry = []
-np.random()
-X_Autain = np.random.RandomState.choice([dataset_Autain[colums[1]][i] for i in range(n)], n, replace=False)
-Y_Autain = []
-
-X_Corbiere = np.random.RandomState.choice([dataset_Corbiere[colums[1]][i] for i in range(n)], n, replace=False)
-Y_Corbiere = []
-
-X_Glucksmann = np.random.RandomState.choice([dataset_Glucksmann[colums[1]][i] for i in range(n)], n, replace=False)
-Y_Glucksmann = []
-
-X_GRS = np.random.RandomState.choice([dataset_GRS[colums[1]][i] for i in range(n)], n, replace=False)
-Y_GRS = []
-
-X_Hollande = np.random.RandomState.choice([dataset_Hollande[colums[1]][i] for i in range(n)], n, replace=False)
-Y_Hollande = []
-
-X_Melonchon = np.random.RandomState.choice([dataset_Melonchon[colums[1]][i] for i in range(n)], n, replace=False)
-Y_Melonchon = []
-
-X_Ruffin = np.random.RandomState.choice([dataset_Ruffin[colums[1]][i] for i in range(n)], n, replace=False)
-Y_Ruffin = []
-
-print(X_Aubry.head())
+dataset_name = "FR-L-MIGR-TWIT-2011-2022.csv"
+dataset = pd.read_csv(dataset_name, sep = ";")
+columns = ["data__id", "data__text", "data__created_at", "author__username"]
+dataset_lenght = len(dataset[columns[0]]) #donne le nombre de tweets dans le dataset
 
 
+n = 300
+#mettre 1 quand le tweet est postif et 0 quand il est négatif
+np.random.seed(100) #permet de fixer toutes expériences aléatoires éffectuées avec random afin que le résultat reste le même afin chaque exécution
+tweets_Id = np.random.choice(dataset_lenght, n, replace=False)
+X = [dataset[columns[1]][i] for i in tweets_Id]
+Y = ["1 à 100",
+     "101 à 200", 
+     "201 à 300"]
+
+def print_tweet(X, debut, fin):
+    for i in range(debut-1, fin):
+        print(f"{i+1}) {X[i]}\n\n")
+
+print_tweet(X, debut=1, fin=100)
 #creation corpus
 
 """
