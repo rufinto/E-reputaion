@@ -46,44 +46,48 @@ def print_tweet(X, debut, fin):
         print(f"{i+1}) {X[i]}\n\n")
 
 
-"""on a split le dataset en trois: 20% pour le dictionnaire de groupe de mots, 60% pour le train et 20% pour le test"""
+"""on a split le dataset en trois: 10% pour le dictionnaire de groupe de mots, 70% pour le train et 20% pour le test"""
 
 X_set, X_test, Y_set, Y_test = sklearn.model_selection.train_test_split(
     X, Y, test_size=0.2, random_state=100)
 
 X_train, Y_train, X_sac_mots, Y_sac_mots = sklearn.model_selection.train_test_split(
-    X_set, Y_set, test_size=0.2, random_state=100)
+    X_set, Y_set, test_size=0.125, random_state=100) #10% du train initail c'est 12,5% du X_set qui lui même vaut 80% du train initial
 
 
 
 #####################################################################################
 #creation corpus
 
-"""
+
 corpus = ""
-for tweet in dataset[colums[1]]:
+for tweet in X_set:
     corpus += tweet
 
-"""
+
 #####################################################################################
 #Tokenization
     
-"""
+
 sac_de_mots = word_tokenize(corpus)
-"""
 
 #####################################################################################
 #filtration
 
-"""
-stop_words = set(stopwords.words("french"))
-mots_utiles = {"ne", "pas", "n"} # stop word à conserver
-mots_inutiles = {"\\", "\\n", "[", "]", "(", ")", "-", ":", ",", "#", "@", "»", "«", "''", "’", "'", ".", "https", "http", "/", "``","&"} #stop word supplémentaires
+def filtrage(sac_de_mots):
+    stop_words = set(stopwords.words("french"))
+    mots_utiles = {"ne", "pas", "n"} # stop word à conserver
+    mots_inutiles = {"\\", "\\n", "[", "]", "(", ")", "-", ":", ",", "#", "@", "»", "«", "''", "’", "'", ".", "https", "http", "/", "``","&"} #stop word supplémentaires
 
-stop_words = stop_words.difference(mots_utiles)
-stop_words = stop_words.union(mots_inutiles)
+    stop_words = stop_words.difference(mots_utiles)
+    stop_words = stop_words.union(mots_inutiles)
 
-filtered_sac_de_mots = [word for word in sac_de_mots if word.casefold() not in stop_words]
+    return [word for word in sac_de_mots if word.casefold() not in stop_words]
+
+filtered_sac_de_mots = filtrage(sac_de_mots)
+
+#####################################################################################
+#ici on retire les lien de site web dans les corpus qui ne sont pas utiles
 
 def retire_site_web(liste):
     for word in liste:
@@ -91,20 +95,37 @@ def retire_site_web(liste):
             liste.remove(word)
 
 retire_site_web(filtered_sac_de_mots)
-"""
 
 #####################################################################################
 #lemmatisation
 
-"""
-lemmatizer = WordNetLemmatizer()
-lemmatized_sac_de_mots = [lemmatizer.lemmatize(word, ) for word in filtered_sac_de_mots]
-"""
+def lemmatizeur(filtered_sac_de_mots):
+    lemmatizer = WordNetLemmatizer()
+    return [lemmatizer.lemmatize(word, ) for word in filtered_sac_de_mots]
+
+lemmatized_sac_de_mots = lemmatizeur(filtered_sac_de_mots)
 
 #####################################################################################
-#calcul tf
+#calcul tf , renvoie une liste décroissante de mots selon leur tf
 
-"""
 tf = FreqDist(lemmatized_sac_de_mots)
-print(tf.most_common(50), len(tf))
-"""
+tf.plot(20, cumulative=True)
+
+#####################################################################################
+#base de mot
+
+base_mot = [val[0] for val in tf.most_common()]
+
+#####################################################################################
+#representation d'un vecteur dans la base
+
+def coordonnees_tweet(tweet):
+
+    token = word_tokenize(tweet) #tokenization
+    token = filtrage(token) #filtrage
+    token = retire_site_web(token) #on supprime les liens de sites web
+    token = lemmatizeur(token) #on lemmatise
+    tf_token = FreqDist(token) #on trouve la liste des tfs
+
+    coordonnees = []
+
