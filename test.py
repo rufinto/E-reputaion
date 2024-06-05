@@ -53,7 +53,7 @@ filtered_tweets_by_word = {}
 for i in range(len(dataset['data__text'])):
     tweet1 = dataset['data__text'][i]
     tweet1 = word_tokenize(tweet1)
-    tweet1 = [word for word in tweet if word.casefold() not in stop_words_1]
+    tweet1 = [word for word in tweet1 if word.casefold() not in stop_words_1]
     
     
     filtered_tweets_by_word[i]=tweet1

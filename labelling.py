@@ -100,4 +100,4 @@ def split_singleton(list):
     return list
 
 #Test sur un tweet
-print (chunking(test.filtered_tweets_by_word[80]))
+#print (chunking(test.filtered_tweets_by_word[80]))
