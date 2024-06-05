@@ -27,8 +27,40 @@ X=[4735, 4601, 4766, 522, 4271, 1901, 5611, 4510, 1760, 5621, 1366, 423, 1426, 3
 2487, 3480, 2098, 1615, 4445, 265, 1175, 4420, 2654, 2328, 4080, 5078, 3805, 1911, 
 2175, 4600, 2928, 1286, 15, 674]
 
+def similitude(vecteur, vecteurs_ref):
+    score = 0
+    mots_compte = 0
+    for clefs in vecteurs_ref:
+        c = sum(1 for mot in clefs if mot in vecteur)
+        
+        if c > 0:
+            mots_compte += c / len(clefs)
+            
+        if (c / len(clefs)) >= 0.5:
+            valeur_totale = vecteurs_ref[clefs]
+            score += (c / len(clefs)) * valeur_totale
+            
+    if mots_compte == 0:
+        return 0 
+    print(mots_compte)
+    score_total = score / mots_compte
+    return score_total
 
-for i in range(10):
-    print (f"{i+1}) {labelling.chunking(test.filtered_tweets[X[i]])}\n\n")
+def chunks(i):
+    return labelling.chunking(test.filtered_tweets[X[i]])
 
-Chunks = []
+Chunks = {}
+
+i = int(input("Entrez l'indice du tweet à étiqueter: "))
+chunks = labelling.chunking(test.filtered_tweets[X[i]])  # Assurez-vous que la fonction chunking retourne une liste de chunks
+if chunks is not None:
+    for j, chunk in enumerate(chunks):
+        while True:
+            print(chunk)
+            note = input(f"Étiquetez le chunk {j+1} du tweet {i+1} (ou tapez 's' pour passer au suivant): ")
+            if note.lower() == 's':
+                break  # Sortir de la boucle while et passer au chunk suivant
+            else:
+                Chunks[(i, j)] = {'chunk': chunk, 'note': note}
+                break  # Sortir de la boucle while et passer au chunk suivant
+print (Chunks)

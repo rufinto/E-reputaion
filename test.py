@@ -44,7 +44,18 @@ for i in range(len(dataset['data__text'])):
     tweet = dataset['data__text'][i]
     tweet = word_tokenize(tweet)
     tweet = [word for word in tweet if word.casefold() not in stop_words_1]
+    tweet = ' '.join(tweet)
     
     filtered_tweets[i]=tweet
     retire_site_web(filtered_tweets[i])
+
+filtered_tweets_by_word = {}
+for i in range(len(dataset['data__text'])):
+    tweet1 = dataset['data__text'][i]
+    tweet1 = word_tokenize(tweet1)
+    tweet1 = [word for word in tweet if word.casefold() not in stop_words_1]
+    
+    
+    filtered_tweets_by_word[i]=tweet1
+    retire_site_web(filtered_tweets_by_word[i])
 

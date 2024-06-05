@@ -39,7 +39,7 @@ def chunking(tweet):
     list = extract_chunks(tree)
     list_1= extract_words(list)
     list_2 = split_singleton(list_1)
-    print(list_2)
+    return list_2
     
 
 #Transforme l'arbre en liste de branches
@@ -99,5 +99,5 @@ def split_singleton(list):
                 list[i].remove(list[i][j])
     return list
 
-# Test sur un tweet
-#print (chunking(test.filtered_tweets[80]))
+#Test sur un tweet
+print (chunking(test.filtered_tweets_by_word[80]))
