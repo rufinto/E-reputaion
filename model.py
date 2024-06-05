@@ -4,6 +4,7 @@ import numpy as np
 
 import nltk
 import sklearn.model_selection
+import sklearn.neighbors
 nltk.download('punkt')
 nltk.download("stopwords")
 nltk.download('wordnet')
@@ -170,4 +171,5 @@ def coordonnees_tweet(tweet):
 #implémentation KNN
 
 K = 5
-KNN_model = sklearn.model_selection.knn
+KNN_model = sklearn.neighbors.KNeighborsClassifier(K)
+KNN_
