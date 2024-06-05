@@ -15,7 +15,7 @@ os.environ['JAVAHOME'] = java_path
 pos_tagger_1 = StanfordPOSTagger(model, jar, encoding='utf8')
 
 
-tb = Blobber(pos_tagger=PatternTagger, analyzer=PatternAnalyzer())
+tb = Blobber(pos_tagger=PatternTagger(), analyzer=PatternAnalyzer())
 
 
 # Supposons que X contient vos tweets et y contient vos étiquettes
@@ -52,3 +52,35 @@ print(f"R^2 Score: {r2}")
 # Vous pouvez également utiliser le modèle entraîné pour prédire les étiquettes des nouveaux tweets
 # new_tweets_tfidf = vectorizer.transform(new_tweets)
 # new_tweets_sentiments = rf_regressor.predict(new_tweets_tfidf)
+
+from sklearn.metrics import recall_score
+
+# Convertir les valeurs continues en catégories
+# Positif (1) si la note est >= 0, négatif (0) si la note est < 0
+y_test_binned = []
+y_pred_binned = []
+for y in y_test:
+    if y >= 0:
+        y_test_binned.append(1)
+    else:
+        y_test_binned.append(0)
+for y in y_pred:
+    if y >= 0:
+        y_pred_binned.append(1)
+    else:
+        y_pred_binned.append(0)
+
+import matplotlib.pyplot as plt
+
+# Assumons que y_test contient les valeurs réelles et y_pred contient les prédictions du modèle
+plt.scatter(y_test, y_pred, alpha=0.5)
+plt.xlabel('Valeurs Réelles')
+plt.ylabel('Prédictions')
+plt.title('Prédictions vs. Valeurs Réelles')
+plt.show()
+
+# Calculer le rappel
+recall_pos= recall_score(y_test_binned, y_pred_binned, pos_label=1)
+recall_neg = recall_score(y_test_binned, y_pred_binned, pos_label=0)
+print(f'Rappel pour les tweets positifs: {recall_pos:.2f}')
+print(f'Rappel pour les tweets négatifs: {recall_neg:.2f}')
