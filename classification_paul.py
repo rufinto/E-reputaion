@@ -1,44 +1,32 @@
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.pipeline import make_pipeline
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import classification_report
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_squared_error, r2_score
 
-# Exemples de tweets et leurs étiquettes de sentiment
-tweets = [
-    "I love the new policies on immigration!",
-    "The immigration system is broken and needs fixing.",
-    "I'm not sure how I feel about the new immigration laws.",
-    "The government is doing a great job with immigration.",
-    "The new laws are terrible for immigrants.",
-    "I think the new policies are fine.",
-    "Immigration reform is needed urgently.",
-    "I'm happy with the changes to immigration laws."
-]
-labels = ["positive", "negative", "neutral", "positive", "negative", "neutral", "negative", "positive"]
+# Supposons que X contient vos tweets et y contient vos étiquettes
+# X et y sont des listes de même longueur, X contient les tweets et y contient les étiquettes continues entre -1 et 1
 
-# Diviser les données en ensembles d'entraînement et de test
-X_train, X_test, y_train, y_test = train_test_split(tweets, labels, test_size=0.3, random_state=42)
+# Divisez les données en ensembles d'entraînement et de test
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# Créer un pipeline avec TfidfVectorizer et RandomForestClassifier
-model = make_pipeline(TfidfVectorizer(), RandomForestClassifier(n_estimators=100, random_state=42))
+# Convertissez les tweets en représentation TF-IDF
+vectorizer = TfidfVectorizer()
+X_train_tfidf = vectorizer.fit_transform(X_train)
+X_test_tfidf = vectorizer.transform(X_test)
 
-# Entraîner le modèle
-model.fit(X_train, y_train)
+# Initialisez et entraînez le modèle RandomForest
+rf_regressor = RandomForestRegressor(n_estimators=100, random_state=42)
+rf_regressor.fit(X_train_tfidf, y_train)
 
-# Faire des prédictions
-y_pred = model.predict(X_test)
+# Faites des prédictions sur l'ensemble de test
+y_pred = rf_regressor.predict(X_test_tfidf)
 
-# Afficher les résultats
-print(classification_report(y_test, y_pred))
+# Évaluez les performances du modèle
+mse = mean_squared_error(y_test, y_pred)
+r2 = r2_score(y_test, y_pred)
+print(f"Mean Squared Error: {mse}")
+print(f"R^2 Score: {r2}")
 
-# Exemple de prédiction avec de nouveaux tweets
-new_tweets = [
-    "The new immigration policies are great!",
-    "I hate the changes to the immigration laws."
-]
-predicted_labels = model.predict(new_tweets)
-
-for tweet, label in zip(new_tweets, predicted_labels):
-    print(f"Tweet: {tweet}")
-    print(f"Predicted sentiment: {label}")
+# Vous pouvez également utiliser le modèle entraîné pour prédire les étiquettes des nouveaux tweets
+# new_tweets_tfidf = vectorizer.transform(new_tweets)
+# new_tweets_sentiments = rf_regressor.predict(new_tweets_tfidf)

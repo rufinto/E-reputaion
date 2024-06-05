@@ -39,7 +39,6 @@ def chunking(tweet):
     list = extract_chunks(tree)
     list_1= extract_words(list)
     list_2 = split_singleton(list_1)
-    print(list)
     print(list_2)
     
 
