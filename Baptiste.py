@@ -3,7 +3,7 @@ import pandas as pd
 
 vecteurs_ref = {('migration', 'dehors'): 24, ('migration', 'aime', 'pas'): 18}
 vecteur = ['migration', 'pas','encore','dehors','aime', 'vie', 'dedans']
- 
+
 
 def similitude(vecteur, vecteurs_ref):
     score = 0
@@ -14,7 +14,7 @@ def similitude(vecteur, vecteurs_ref):
         if c > 0:
             mots_compte += c / len(clefs)
             
-        if (c / len(clefs)) >= 0.5:
+        if (c / len(clefs)) >= 0.1:
             valeur_totale = vecteurs_ref[clefs]
             score += (c / len(clefs)) * valeur_totale
             
