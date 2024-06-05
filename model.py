@@ -33,6 +33,7 @@ def print_tweet(X, debut, fin):
 
 print_tweet(X, debut=201, fin=300)
 
+
 #####################################################################################
 #creation corpus
 
