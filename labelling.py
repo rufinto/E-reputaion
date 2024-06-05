@@ -29,10 +29,6 @@ grammar = r"""
 """
 chunk_parser = nltk.RegexpParser(grammar)
 
-# Test sur un tweet
-
-#res = pos_tagger.tag(test.filtered_tweets[90])
-#tree = chunk_parser.parse(res)
 
 
 
@@ -41,10 +37,11 @@ def chunking(tweet):
     res = pos_tagger.tag(tweet)
     tree = chunk_parser.parse(res)
     list = extract_chunks(tree)
-    list_1= extract_words_from_chunks(list)
+    list_1= extract_words(list)
+    list_2 = split_singleton(list_1)
+    print(list)
+    print(list_2)
     
-    print(list_1)
-    tree.draw()
 
 #Transforme l'arbre en liste de branches
 def extract_chunks(tree):
@@ -56,7 +53,7 @@ def extract_chunks(tree):
         chunks.append(chunks_inter)
     return chunks
             
-def extract_words_from_chunks(list):
+#def extract_words_from_chunks(list):
     words = []
     for i in range(len(list)):
         words_inter = []
@@ -81,7 +78,27 @@ def extract_words_from_chunks(list):
     return words
 
 
+def extract_words(nested_list):
+    def helper(sublist):
+        words = []
+        for item in sublist:
+            if isinstance(item, list):
+                words.extend(helper(item))  # Recurse into the sublist
+            elif isinstance(item, tuple):
+                words.append(item[0])  # Extract word from tuple
+            else:
+                words.append(item)  # Extract word from (word, label)
+        return words
 
+    return [helper(lst) for lst in nested_list]
 
+def split_singleton(list):
+    L = ['AUX', 'DET', 'ADP', 'CCONJ', 'SCONJ', 'PRON', 'PUNCT', 'SYM', 'X','NOUN', 'PROPN', 'VERB', 'ADJ', 'ADV', 'NUM', 'INTJ']
+    for i in range(len(list)):
+        for j in range(len(list[i])):
+            if list[i][j] in L:
+                list[i].remove(list[i][j])
+    return list
 
-print (chunking(test.filtered_tweets[80]))
+# Test sur un tweet
+#print (chunking(test.filtered_tweets[80]))
