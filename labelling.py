@@ -41,7 +41,10 @@ def chunking(tweet):
     res = pos_tagger.tag(tweet)
     tree = chunk_parser.parse(res)
     list = extract_chunks(tree)
-    print(list)
+    list_1= extract_words_from_chunks(list)
+    
+    print(list_1)
+    tree.draw()
 
 #Transforme l'arbre en liste de branches
 def extract_chunks(tree):
@@ -53,3 +56,32 @@ def extract_chunks(tree):
         chunks.append(chunks_inter)
     return chunks
             
+def extract_words_from_chunks(list):
+    words = []
+    for i in range(len(list)):
+        words_inter = []
+        for j in range(len(list[i])):
+            if type(list[i][j]) == tuple:
+                if type(list[i][j][-1]) != nltk.tree.Tree:
+                    words_inter.append(list[i][j][0])
+                else:
+                    for k in range(len(list[i][j][-1][1:])):
+                        for l in range(len(list[i][j][-1][1:][k])):
+                            if type(list[i][j][-1][k][l]) == tuple:
+                                words_inter.append(list[i][j][-1][k][l][0])
+                            else:
+                                words_inter.append(list[i][j][-1][k][0])  
+
+            elif type(list[i][j][0]) == tuple:
+                words_inter.append(list[i][j][0])
+            else:
+                words_inter.append(list[i][0])
+                break
+        words.append(words_inter)
+    return words
+
+
+
+
+
+print (chunking(test.filtered_tweets[80]))
