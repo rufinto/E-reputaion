@@ -25,6 +25,7 @@ n = 300
 #mettre 1 quand le tweet est postif et 0 quand il est négatif
 np.random.seed(100) #permet de fixer toutes expériences aléatoires éffectuées avec random afin que le résultat reste le même afin chaque exécution
 tweets_Id = np.random.choice(dataset_lenght, n, replace=False)
+print(tweets_Id)
 X = [dataset[columns[1]][i] for i in tweets_Id]
 Y = [0.8, 0, 0.6, 0, 0, 0, 1, 0.5, 1, -0.3, 0.5, -1, 0, -0.5, -0.5, 0 , 1, -0.3, 0, -1, 0, -0.3, -1, -0.5, -1, 0.5,
      -0.5, -1, -0.1, 0, -0.5, 0.5, -0.2, 1, 0.5, -0.1, 0, -0.5, -0.5, -0.5, 0, 1, -0.2, -0.5, 0.2, -1, 0, 0.5, -0.5, 
