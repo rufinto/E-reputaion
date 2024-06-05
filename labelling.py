@@ -42,7 +42,7 @@ def chunking(tweet):
     res = pos_tagger.tag(tweet)
     tree = chunk_parser.parse(res)
     list = extract_chunks(tree)
-    return list
+    print(list)
 
 #Transforme l'arbre en liste de branches
 def extract_chunks(tree):
