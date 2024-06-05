@@ -5,9 +5,17 @@ from sklearn.metrics import mean_squared_error, r2_score
 import test
 from textblob import Blobber
 from textblob_fr import PatternTagger, PatternAnalyzer
+from nltk.tag import StanfordPOSTagger
+
+jar = 'C:/Users/paull/Documents/EI DataWeb/stanford-postagger-full-2020-11-17/stanford-postagger-4.2.0.jar'
+model = 'C:/Users/paull/Documents/EI DataWeb/stanford-postagger-full-2020-11-17/models/french-ud.tagger'
+import os
+java_path = "C:/Program Files (x86)/Java/jre-1.8/bin/java.exe"
+os.environ['JAVAHOME'] = java_path
+pos_tagger_1 = StanfordPOSTagger(model, jar, encoding='utf8')
 
 
-tb = Blobber(pos_tagger=PatternTagger(), analyzer=PatternAnalyzer())
+tb = Blobber(pos_tagger=PatternTagger, analyzer=PatternAnalyzer())
 
 
 # Supposons que X contient vos tweets et y contient vos étiquettes
