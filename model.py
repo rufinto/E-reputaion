@@ -125,7 +125,14 @@ def coordonnees_tweet(tweet):
     token = filtrage(token) #filtrage
     token = retire_site_web(token) #on supprime les liens de sites web
     token = lemmatizeur(token) #on lemmatise
-    tf_token = FreqDist(token) #on trouve la liste des tfs
+    tf_token = FreqDist(token).most_common() #on trouve la liste des tfs
 
     coordonnees = []
+    for word in base_mot:
+        coordonnees.append(0)
+        for term in token:
+            if term[0] == word:
+                coordonnees[-1] = term[1]
+                break
+    return coordonnees
 
