@@ -17,11 +17,8 @@ chemin = 'FR-L-MIGR-TWIT-2011-2022.csv'
 dataset = pd.read_csv(chemin, sep=';')
 
 pos_tagger = StanfordPOSTagger(model, jar, encoding='utf8')
-res = pos_tagger.tag(test.filtered_tweets[90])
-#print (res)
 
 
-#grammar = "NP: {<DT>?<ADJ>*<VERB>?<NOUN>}"
 
 grammar = r"""
   NP: {<DET>?<ADJ>*<NOUN>+}         # Groupe nominal: déterminant optionnel, adjectifs optionnels, un ou plusieurs noms
@@ -32,12 +29,14 @@ grammar = r"""
 """
 chunk_parser = nltk.RegexpParser(grammar)
 
+# Test sur un tweet
 
-tree = chunk_parser.parse(res)
-#print(type(tree))
+#res = pos_tagger.tag(test.filtered_tweets[90])
+#tree = chunk_parser.parse(res)
 
 
 
+#Fonction qui permet de chunker un tweet
 def chunking(tweet):
     res = pos_tagger.tag(tweet)
     tree = chunk_parser.parse(res)
