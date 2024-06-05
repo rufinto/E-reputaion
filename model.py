@@ -3,8 +3,7 @@ import sklearn
 import numpy as np 
 
 import nltk
-import sklearn.model_selection
-import sklearn.neighbors
+import sklearn
 nltk.download('punkt')
 nltk.download("stopwords")
 nltk.download('wordnet')
@@ -72,8 +71,8 @@ def filtrage(tweet):
     mots_utiles = {"ne", "pas", "n"} # stop word à conserver
     mots_inutiles = {"\\", "\\n", "[", "]", "(", ")", "-", ":", ",", "#", "@", "»", "«", "''", "’", "'", "|", ".", "https", "http", "/", "``","&"} #stop word supplémentaires
 
-stop_words = stop_words.difference(mots_utiles)
-stop_words = stop_words.union(mots_inutiles)
+    stop_words = stop_words.difference(mots_utiles)
+    stop_words = stop_words.union(mots_inutiles)
 
     return [word for word in tweet if word.casefold() not in stop_words]
 
