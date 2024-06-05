@@ -3,6 +3,7 @@ import sklearn
 import numpy as np 
 
 import nltk
+import sklearn.model_selection
 nltk.download('punkt')
 nltk.download("stopwords")
 nltk.download('wordnet')
@@ -40,12 +41,20 @@ Y = [0.8, 0, 0.6, 0, 0, 0, 1, 0.5, 1, -0.3, 0.5, -1, 0, -0.5, -0.5, 0 , 1, -0.3,
      -0.3, -0.2, 0.6, 0.4, 0.3, 0.5, 0.7, 0, 0.45, 0.32, 0.2, -0.4, -0.45, 0, -0.1, 0.67, 0.8, -0.6, -0.3, -0.2, 0, 0.71,
      0.6, 0.67, -0.4, 0.2, -0.2]
 
-print(len(Y))
 def print_tweet(X, debut, fin):
     for i in range(debut-1, fin):
         print(f"{i+1}) {X[i]}\n\n")
 
-#print_tweet(X, debut=1, fin=100)
+
+"""on a split le dataset en trois: 20% pour le dictionnaire de groupe de mots, 60% pour le train et 20% pour le test"""
+
+X_set, X_test, Y_set, Y_test = sklearn.model_selection.train_test_split(
+    X, Y, test_size=0.2, random_state=100)
+
+X_train, Y_train, X_sac_mots, Y_sac_mots = sklearn.model_selection.train_test_split(
+    X_set, Y_set, test_size=0.2, random_state=100)
+
+
 
 #####################################################################################
 #creation corpus
