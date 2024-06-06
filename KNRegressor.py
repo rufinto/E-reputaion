@@ -4,6 +4,8 @@ import numpy as np
 
 import nltk
 import sklearn
+import sklearn.model_selection
+import sklearn.neighbors
 nltk.download('punkt')
 nltk.download("stopwords")
 nltk.download('wordnet')
@@ -11,6 +13,15 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 from nltk import FreqDist
+
+from sklearn.linear_model import LinearRegression
+from sklearn.pipeline import Pipeline
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error, r2_score
+from textblob import Blobber
+from textblob_fr import PatternTagger, PatternAnalyzer
+import test
 
 #####################################################################################
 #lecture du dataset et etiquetage
@@ -20,14 +31,16 @@ dataset = pd.read_csv(dataset_name, sep = ";")
 columns = ["data__id", "data__text", "data__created_at", "author__username"]
 dataset_lenght = len(dataset[columns[0]]) #donne le nombre de tweets dans le dataset
 
-
+#####################################################################################
+#etuiquetage manuel de n tweets
+    
 n = 300
 #mettre 1 quand le tweet est postif et 0 quand il est négatif
 np.random.seed(100) #permet de fixer toutes expériences aléatoires éffectuées avec random afin que le résultat reste le même afin chaque exécution
 tweets_Id = np.random.choice(dataset_lenght, n, replace=False)
 
-X = [dataset[columns[1]][i] for i in tweets_Id]
-Y = [0.8, 0, 0.6, 0, 0, 0, 1, 0.5, 1, -0.3, 0.5, -1, 0, -0.5, -0.5, 0 , 1, -0.3, 0, -1, 0, -0.3, -1, -0.5, -1, 0.5,
+X_manuel = [dataset[columns[1]][i] for i in tweets_Id]
+Y_manuel = [0.8, 0, 0.6, 0, 0, 0, 1, 0.5, 1, -0.3, 0.5, -1, 0, -0.5, -0.5, 0 , 1, -0.3, 0, -1, 0, -0.3, -1, -0.5, -1, 0.5,
      -0.5, -1, -0.1, 0, -0.5, 0.5, -0.2, 1, 0.5, -0.1, 0, -0.5, -0.5, -0.5, 0, 1, -0.2, -0.5, 0.2, -1, 0, 0.5, -0.5, 
      -1, 1, 1, 0, -0.5, 0, -0.1, 0, -1, 1, 0.5, 0.5, -0.2, -0.1, -0.5, -0.3, -0.1, -0.1, -0.2, -0.2, -0.2, -0.5, -0.2,
      -0.2, 0, 0.5, -0.5, -1, -0.2, 0.5, -0.3, -0.1, 0, 0, 1, 0.5, 0, -1, -0.5, 0, 0.5, 0, 0, 0.5, -1, 0.5, 1, -0.5, -1,
@@ -42,26 +55,15 @@ Y = [0.8, 0, 0.6, 0, 0, 0, 1, 0.5, 1, -0.3, 0.5, -1, 0, -0.5, -0.5, 0 , 1, -0.3,
      -0.3, -0.2, 0.6, 0.4, 0.3, 0.5, 0.7, 0, 0.45, 0.32, 0.2, -0.4, -0.45, 0, -0.1, 0.67, 0.8, -0.6, -0.3, -0.2, 0, 0.71,
      0.6, 0.67, -0.4, 0.2, -0.2]
 
-print(len(Y))
 def print_tweet(X, debut, fin):
     for i in range(debut-1, fin):
         print(f"{i+1}) {X[i]}\n\n")
 
+# Divisez les données en ensembles d'entraînement et de test
+"""on a split le dataset en trois: 80% pour le train et 20% pour le test"""
 
-"""on a split le dataset en trois: 10% pour le dictionnaire de groupe de mots, 70% pour le train et 20% pour le test"""
-
-X_set, X_test, Y_set, Y_test = sklearn.model_selection.train_test_split(
-    X, Y, test_size=0.2, random_state=100)
-
-X_train, Y_train, X_sac_mots, Y_sac_mots = sklearn.model_selection.train_test_split(
-    X_set, Y_set, test_size=0.125, random_state=100) #10% du train initail c'est 12,5% du X_set qui lui même vaut 80% du train initial
-
-
-#####################################################################################
-#Tokenization + creation corpus de mots
-    
-
-list_tweets = [word_tokenize(tweet) for tweet in X_set] #liste de tweets tokenizes
+X_train_manuel, X_test_manuel, Y_train_manuel, Y_test_manuel = sklearn.model_selection.train_test_split(
+    X_manuel, Y_manuel, test_size=0.2, random_state=100)
 
 #####################################################################################
 #filtration
@@ -76,8 +78,6 @@ def filtrage(tweet):
 
     return [word for word in tweet if word.casefold() not in stop_words]
 
-filtered_list_tweets = [filtrage(tweet) for tweet in list_tweets]
-
 #####################################################################################
 #ici on retire les lien de site web dans les corpus qui ne sont pas utiles. Elle prend
 #comme entrée la liste de token d'un tweet
@@ -87,9 +87,24 @@ def retire_site_web(tweet):
         if word[0:2] == "//":
             tweet.remove(word)
 
-for tweet in filtered_list_tweets:
-    retire_site_web(tweet)
+#####################################################################################
+#etiquettage automatique de tous les tweets
+    
+tb = Blobber(pos_tagger=PatternTagger(), analyzer=PatternAnalyzer())
 
+# Supposons que X contient vos tweets et y contient vos étiquettes
+# X et y sont des listes de même longueur, X contient les tweets et y contient les étiquettes continues entre -1 et 1
+
+X_all = [tweet for tweet in dataset[columns[1]]]
+X_all = [word_tokenize(tweet) for tweet in X_all]
+X_all = [filtrage(tweet) for tweet in X_all]
+for tweet in X_all:
+    retire_site_web(tweet)
+X_automatique = [" ".join(tweet) for tweet in X_all]
+Analysis = [tb(tweet) for tweet in X_automatique]
+Y_automatique = [analysis.sentiment[0] for analysis in Analysis]
+
+X_train_automatique, X_test_automatique, Y_train_automatique, Y_test_automatique = sklearn.model_selection.train_test_split(X_automatique, Y_automatique, test_size=0.2)
 #####################################################################################
 #lemmatisation
 
@@ -97,13 +112,31 @@ def lemmatizeur(tweet):
     lemmatizer = WordNetLemmatizer()
     return [lemmatizer.lemmatize(word) for word in tweet]
 
-lemmatized_list_tweets = [lemmatizeur(tweet) for tweet in filtered_list_tweets] # on lemmatise chaque tweet de la liste de tweets
+def Datasets(dtyp):
+
+    """renvoie la liste de tweets tokenizée, filtrée, lemmatizée.
+    dtyp = 0 Si dataset manuel
+    dtyp = 1 si dataset etiquuetée numériquement"""
+    #####################################################################################
+    #Tokenization + creation corpus de mots
+    
+    if dtyp == 0:
+        X_train, X_test, Y_train, Y_test = X_train_manuel, X_test_manuel, Y_train_manuel, Y_test_manuel
+    elif dtyp == 1:
+        X_train, X_test, Y_train, Y_test = X_train_automatique, X_test_automatique, Y_train_automatique, Y_test_automatique
+    list_tweets = [word_tokenize(tweet) for tweet in X_train] #liste de tweets tokenizes
+    filtered_list_tweets = [filtrage(tweet) for tweet in list_tweets]
+    for tweet in filtered_list_tweets:
+        retire_site_web(tweet)
+    lemmatized_list_tweets = [lemmatizeur(tweet) for tweet in filtered_list_tweets] # on lemmatise chaque tweet de la liste de tweets
+    return list_tweets, X_test, Y_train, Y_test
 
 #####################################################################################
 #creation du sac de token filtré et lemmatizé
+X_train, X_test, Y_train, Y_test = Datasets(dtyp = 0)
 
 sac_de_mots = [] 
-for tweet in lemmatized_list_tweets:
+for tweet in X_train:
     sac_de_mots += tweet
 
 #on calcul la tf
@@ -125,7 +158,7 @@ def compute_idf(list_tweets, sac_de_mots):
     return idf
 
 #on calcul l'idf
-idf = compute_idf(lemmatized_list_tweets, tf_sac_de_mots)
+idf = compute_idf(X_train, tf_sac_de_mots)
 
 #on calcul tf-idf
 def compute_tf_idf(tf_list, idf_list):
@@ -153,13 +186,17 @@ taille_base = len(base_mots)
 #####################################################################################
 #representation d'un vecteur dans la base
 
-def coordonnees_tweet(tweet):
+def nettoyage_tweet(tweet):
 
     token = word_tokenize(tweet) #tokenization
     token = filtrage(token) #filtrage
     retire_site_web(token) #on supprime les liens de sites web
     token = lemmatizeur(token) #on lemmatise
     tf_token = FreqDist(token).most_common() #on trouve la liste des tfs
+    return tf_token
+
+
+def coordonnees_tweet(tf_token):
 
     coordonnees = [0]*taille_base
     for term in tf_token:
@@ -170,6 +207,46 @@ def coordonnees_tweet(tweet):
 #####################################################################################
 #implémentation KNN
 
+def coordonnees_matrice(X):
+    return np.array([coordonnees_tweet(FreqDist(tweet).most_common()) for tweet in X])
+
 K = 5
-KNN_model = sklearn.neighbors.KNeighborsClassifier(K)
-KNN_
+KNN_model = sklearn.neighbors.KNeighborsRegressor(n_neighbors=K)
+KNN_model.fit(coordonnees_matrice(X_train), Y_train)
+
+def accuracy(accuracy_type):
+
+    """accuracy_type = 0 signifie qu'on regarde juste si c'est positif / negatif / neutre par rapport à la prediction
+       avec trois classe: [-1, 0.05[, [-0.5, 0.5], ]0.05, 1]
+       accuracy_type = 1 si on calcule l'erreur quadratique moyenne de la prediction par rapport au traget""" 
+
+    targets = np.array(Y_test)
+    predictions = []
+
+    for tweet in X_test:
+        tweet_coordonnees = np.array(coordonnees_tweet(nettoyage_tweet(tweet))).reshape(1, -1)
+        predictions.append(KNN_model.predict(tweet_coordonnees))
+    predictions = np.array(predictions)
+
+    if accuracy_type == 1:
+        erreur = (predictions - targets)**2
+        erreur = erreur.mean()
+        print(f"Erreur quadratiqe moyenne = {erreur}")
+    
+    elif accuracy_type == 0:
+        prediction_vraies = 0
+        for score, tag in zip(predictions, targets):
+            if score < -0.05 and tag < 0:
+                prediction_vraies += 1
+            elif score >= -0.05 and score <= 0.05 and tag == 0 : 
+                prediction_vraies += 1
+            elif score > 0.05 and tag > 0:
+                prediction_vraies += 1
+        accuracy_rate = prediction_vraies / len(targets)
+        print(f"Pourcetage de reussite = {accuracy_rate*100}%")
+
+accuracy(0)
+accuracy(1)
+
+
+
