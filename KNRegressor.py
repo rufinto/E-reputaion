@@ -179,7 +179,7 @@ sorted(tf_idf, key=tf_idf_value)
 
 #####################################################################################
 #base de mot
-
+tf.plot(20, cumulative=True)
 base_mots = [val[0] for val in tf_idf]
 taille_base = len(base_mots)
 
@@ -211,10 +211,10 @@ def coordonnees_matrice(X):
     return np.array([coordonnees_tweet(FreqDist(tweet).most_common()) for tweet in X])
 
 K = 5
-KNN_model = sklearn.neighbors.KNeighborsRegressor(n_neighbors=K)
-KNN_model.fit(coordonnees_matrice(X_train), Y_train)
+KNR_model = sklearn.neighbors.KNeighborsRegressor(n_neighbors=K)
+KNR_model.fit(coordonnees_matrice(X_train), Y_train)
 
-def accuracy(accuracy_type):
+def accuracy():
 
     """accuracy_type = 0 signifie qu'on regarde juste si c'est positif / negatif / neutre par rapport à la prediction
        avec trois classe: [-1, 0.05[, [-0.5, 0.5], ]0.05, 1]
@@ -225,28 +225,26 @@ def accuracy(accuracy_type):
 
     for tweet in X_test:
         tweet_coordonnees = np.array(coordonnees_tweet(nettoyage_tweet(tweet))).reshape(1, -1)
-        predictions.append(KNN_model.predict(tweet_coordonnees))
+        predictions.append(KNR_model.predict(tweet_coordonnees))
     predictions = np.array(predictions)
 
-    if accuracy_type == 1:
-        erreur = (predictions - targets)**2
-        erreur = erreur.mean()
-        print(f"Erreur quadratiqe moyenne = {erreur}")
+    erreur = (predictions - targets)**2
+    erreur = erreur.mean()
+    print(f"Erreur quadratiqe moyenne = {erreur}")
     
-    elif accuracy_type == 0:
-        prediction_vraies = 0
-        for score, tag in zip(predictions, targets):
-            if score < -0.05 and tag < 0:
-                prediction_vraies += 1
-            elif score >= -0.05 and score <= 0.05 and tag == 0 : 
-                prediction_vraies += 1
-            elif score > 0.05 and tag > 0:
-                prediction_vraies += 1
-        accuracy_rate = prediction_vraies / len(targets)
-        print(f"Pourcetage de reussite = {accuracy_rate*100}%")
+    prediction_vraies = 0
+    for score, tag in zip(predictions, targets):
+        if score < -0.05 and tag < 0:
+            prediction_vraies += 1
+        elif score >= -0.05 and score <= 0.05 and tag == 0 : 
+            prediction_vraies += 1
+        elif score > 0.05 and tag > 0:
+            prediction_vraies += 1
+    accuracy_rate = prediction_vraies / len(targets)
+    print(f"Pourcetage de reussite = {accuracy_rate*100}%")
 
-accuracy(0)
-accuracy(1)
+accuracy()
+
 
 
 
