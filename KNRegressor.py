@@ -14,14 +14,17 @@ from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 from nltk import FreqDist
 
-from sklearn.linear_model import LinearRegression
-from sklearn.pipeline import Pipeline
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error, r2_score
 from textblob import Blobber
 from textblob_fr import PatternTagger, PatternAnalyzer
-import test
+import matplotlib.pyplot as plt
+
+"""
+pour lancer le model il faut aller à la ligne 132 pour choisir si l'on veut l'entraîner sur le dataset etiqueté manuellement
+et contenants 300 tweets (choisir dtyp=0), ou sur le dataset etiqueté automatiquement et qui contient tous les tweets (dtyp=1).
+pour le datase complet ça prendra un peu de temps car il ya un corpus de plus de 100k mots à traiter, il faut environ 5 minutes
+delon la puissance de la machine avec laquelle vous exécuter le code. 
+
+"""
 
 #####################################################################################
 #lecture du dataset et etiquetage
@@ -179,7 +182,6 @@ sorted(tf_idf, key=tf_idf_value)
 
 #####################################################################################
 #base de mot
-tf.plot(20, cumulative=True)
 base_mots = [val[0] for val in tf_idf]
 taille_base = len(base_mots)
 
@@ -207,6 +209,7 @@ def coordonnees_tweet(tf_token):
 #####################################################################################
 #implémentation KNN
 
+#fonction de vectorisation
 def coordonnees_matrice(X):
     return np.array([coordonnees_tweet(FreqDist(tweet).most_common()) for tweet in X])
 
@@ -243,7 +246,7 @@ def accuracy():
     accuracy_rate = prediction_vraies / len(targets)
     print(f"Pourcetage de reussite = {accuracy_rate*100}%")
 
-accuracy()
+#accuracy()
 
 
 
