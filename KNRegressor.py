@@ -246,7 +246,7 @@ def accuracy():
     accuracy_rate = prediction_vraies / len(targets)
     print(f"Pourcetage de reussite = {accuracy_rate*100}%")
 
-#accuracy()
+accuracy()
 
 
 
