@@ -3,14 +3,13 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.linear_model import LinearRegression
-from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score, confusion_matrix, roc_curve, roc_auc_score, precision_recall_curve, recall_score
 from sklearn.preprocessing import label_binarize
 from sklearn.model_selection import learning_curve 
-from KNRegressor import X_train, X_test, Y_train, Y_test
-from KNRegressor import coordonnees_matrice
+from Preprocessing import X_train, X_test, Y_train, Y_test
+from Preprocessing import coordonnees_matrice,coordonnees_tweet, nettoyage_tweet
 
-X_test_final,X_train_final=coordonnees_matrice(X_test,X_train)
+X_train_final=coordonnees_matrice(X_train)
 
 regressor = LinearRegression()
 
@@ -18,8 +17,13 @@ regressor = LinearRegression()
 regressor.fit(X_train_final, Y_train)
 
 # Prédisez les valeurs sur les données de test
-Y_pred = regressor.predict(X_test_final)
+predictions = []
+for tweet in X_test:
+        tweet_coordonnees = np.array(coordonnees_tweet(nettoyage_tweet(tweet))).reshape(1, -1)
+        predictions.append(regressor.predict(tweet_coordonnees))
+predictions = np.array(predictions) 
 
+Y_pred = predictions
 # Évaluez les performances du modèle
 mse = mean_squared_error(Y_test, Y_pred)
 r2 = r2_score(Y_test, Y_pred)
@@ -154,3 +158,4 @@ intercept = regressor.intercept_
 
 print(f"Coefficients: {coefficients}")
 print(f"Intercept: {intercept}")
+

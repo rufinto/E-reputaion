@@ -31,7 +31,7 @@ delon la puissance de la machine avec laquelle vous exécuter le code.
 
 dataset_name = "FR-L-MIGR-TWIT-2011-2022.csv"
 dataset = pd.read_csv(dataset_name, sep = ";")
-columns = ["data_id", "datatext", "datacreated_at", "author_username"]
+columns = ["data__id", "data__text", "data__created_at", "author__username"]
 dataset_lenght = len(dataset[columns[0]]) #donne le nombre de tweets dans le dataset
 
 #####################################################################################
