@@ -119,7 +119,7 @@ def Datasets(dtyp):
 
     """renvoie la liste de tweets tokenizée, filtrée, lemmatizée.
     dtyp = 0 Si dataset manuel
-    dtyp = 1 si dataset etiquuetée numériquement"""
+    dtyp = 1 si dataset etiqueté numériquement"""
     #####################################################################################
     #Tokenization + creation corpus de mots
     
