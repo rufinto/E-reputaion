@@ -9,6 +9,7 @@ from nltk.tag import StanfordPOSTagger
 import pandas as pd
 from nltk.tokenize import word_tokenize
 import seaborn as sns
+import KNRegressor
 # Importing the dataset
 
 dataset_name = "FR-L-MIGR-TWIT-2011-2022.csv"
@@ -54,23 +55,25 @@ analysis = [tb(tweet) for tweet in X]
 
 Y =[analysis.sentiment[0] for analysis in analysis]
 
+
+
 # Division des données en ensembles d'entraînement et de test
-X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, random_state=42)
+X_train, X_test, y_train, y_test = KNRegressor.X_train, KNRegressor.X_test, KNRegressor.Y_train, KNRegressor.Y_test
 
 # Convertion des tweets en représentation TF-IDF
-vectorizer = TfidfVectorizer()
+#vectorizer = TfidfVectorizer()
 
 
 
-X_train_tfidf = vectorizer.fit_transform(X_train)
-X_test_tfidf = vectorizer.transform(X_test)
+#X_train_tfidf = vectorizer.fit_transform(X_train)
+#X_test_tfidf = vectorizer.transform(X_test)
 
 # Initialisation et entraînement du modèle RandomForest
 rf_regressor = RandomForestRegressor(n_estimators=100, random_state=42)
-rf_regressor.fit(X_train_tfidf, y_train)
+rf_regressor.fit(KNRegressor.coordonnees_matrice(X_train), y_train)
 
 # Faire des prédictions sur l'ensemble de test
-y_pred = rf_regressor.predict(X_test_tfidf)
+y_pred = rf_regressor.predict(KNRegressor.coordonnees_matrice(X_test))
 
 # Évaluation des performances du modèle
 mse = mean_squared_error(y_test, y_pred)
