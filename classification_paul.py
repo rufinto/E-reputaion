@@ -37,17 +37,17 @@ X_train_tfidf = vectorizer.fit_transform(X_train)
 X_test_tfidf = vectorizer.transform(X_test)
 
 # Initialisez et entraînez le modèle RandomForest
-rf_regressor = RandomForestRegressor(n_estimators=100, random_state=42)
-rf_regressor.fit(X_train_tfidf, y_train)
+#rf_regressor = RandomForestRegressor(n_estimators=100, random_state=42)
+#rf_regressor.fit(X_train_tfidf, y_train)
 
 # Faites des prédictions sur l'ensemble de test
-y_pred = rf_regressor.predict(X_test_tfidf)
+#y_pred = rf_regressor.predict(X_test_tfidf)
 
 # Évaluez les performances du modèle
-mse = mean_squared_error(y_test, y_pred)
-r2 = r2_score(y_test, y_pred)
-print(f"Mean Squared Error: {mse}")
-print(f"R^2 Score: {r2}")
+#mse = mean_squared_error(y_test, y_pred)
+#r2 = r2_score(y_test, y_pred)
+#print(f"Mean Squared Error: {mse}")
+#print(f"R^2 Score: {r2}")
 
 # Vous pouvez également utiliser le modèle entraîné pour prédire les étiquettes des nouveaux tweets
 # new_tweets_tfidf = vectorizer.transform(new_tweets)
@@ -57,7 +57,7 @@ from sklearn.metrics import recall_score
 
 # Convertir les valeurs continues en catégories
 # Positif (1) si la note est >= 0, négatif (0) si la note est < 0
-y_test_binned = []
+'''y_test_binned = []
 y_pred_binned = []
 for y in y_test:
     if y >= 0:
@@ -68,19 +68,32 @@ for y in y_pred:
     if y >= 0:
         y_pred_binned.append(1)
     else:
-        y_pred_binned.append(0)
+        y_pred_binned.append(0)'''
 
 import matplotlib.pyplot as plt
 
 # Assumons que y_test contient les valeurs réelles et y_pred contient les prédictions du modèle
-plt.scatter(y_test, y_pred, alpha=0.5)
-plt.xlabel('Valeurs Réelles')
-plt.ylabel('Prédictions')
-plt.title('Prédictions vs. Valeurs Réelles')
+n_estimators_list = [10, 50, 100, 150]
+
+# Stocker les erreurs de test
+test_errors = []
+
+# Ajuster progressivement le nombre d'estimateurs
+for n_estimators in n_estimators_list:
+    model = RandomForestRegressor(n_estimators=n_estimators, random_state=42)
+    model.fit(X_train_tfidf, y_train)
+    y_pred = model.predict(X_test_tfidf)
+    test_errors.append(mean_squared_error(y_test, y_pred))
+
+# Tracer les résultats
+plt.plot(n_estimators_list, test_errors, marker='o')
+plt.xlabel('Nombre d\'estimateurs')
+plt.ylabel('Erreur quadratique moyenne (test)')
+plt.title('Optimisation du nombre d\'estimateurs')
 plt.show()
 
 # Calculer le rappel
-recall_pos= recall_score(y_test_binned, y_pred_binned, pos_label=1)
+'''recall_pos= recall_score(y_test_binned, y_pred_binned, pos_label=1)
 recall_neg = recall_score(y_test_binned, y_pred_binned, pos_label=0)
 print(f'Rappel pour les tweets positifs: {recall_pos:.2f}')
-print(f'Rappel pour les tweets négatifs: {recall_neg:.2f}')
+print(f'Rappel pour les tweets négatifs: {recall_neg:.2f}')'''

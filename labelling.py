@@ -101,3 +101,7 @@ def split_singleton(list):
 
 #Test sur un tweet
 #print (chunking(test.filtered_tweets_by_word[80]))
+list_of_chunks=[]
+for i in range(1000):
+    list_of_chunks.append(chunking(test.filtered_tweets_by_word[i]))
+print(list_of_chunks)
