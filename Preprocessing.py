@@ -31,7 +31,7 @@ delon la puissance de la machine avec laquelle vous exécuter le code.
 
 dataset_name = "FR-L-MIGR-TWIT-2011-2022.csv"
 dataset = pd.read_csv(dataset_name, sep = ";")
-columns = ["data__id", "data__text", "data__created_at", "author__username"]
+columns = ["data_id", "datatext", "datacreated_at", "author_username"]
 dataset_lenght = len(dataset[columns[0]]) #donne le nombre de tweets dans le dataset
 
 #####################################################################################
@@ -119,7 +119,7 @@ def Datasets(dtyp):
 
     """renvoie la liste de tweets tokenizée, filtrée, lemmatizée.
     dtyp = 0 Si dataset manuel
-    dtyp = 1 si dataset etiqueté numériquement"""
+    dtyp = 1 si dataset etiquuetée numériquement"""
     #####################################################################################
     #Tokenization + creation corpus de mots
     
@@ -212,42 +212,3 @@ def coordonnees_tweet(tf_token):
 #fonction de vectorisation
 def coordonnees_matrice(X):
     return np.array([coordonnees_tweet(FreqDist(tweet).most_common()) for tweet in X])
-
-K = 5
-KNR_model = sklearn.neighbors.KNeighborsRegressor(n_neighbors=K)
-KNR_model.fit(coordonnees_matrice(X_train), Y_train)
-
-def accuracy():
-
-    """accuracy_type = 0 signifie qu'on regarde juste si c'est positif / negatif / neutre par rapport à la prediction
-       avec trois classe: [-1, 0.05[, [-0.5, 0.5], ]0.05, 1]
-       accuracy_type = 1 si on calcule l'erreur quadratique moyenne de la prediction par rapport au traget""" 
-
-    targets = np.array(Y_test)
-    predictions = []
-
-    for tweet in X_test:
-        tweet_coordonnees = np.array(coordonnees_tweet(nettoyage_tweet(tweet))).reshape(1, -1)
-        predictions.append(KNR_model.predict(tweet_coordonnees))
-    predictions = np.array(predictions)
-
-    erreur = (predictions - targets)**2
-    erreur = erreur.mean()
-    print(f"Erreur quadratiqe moyenne = {erreur}")
-    
-    prediction_vraies = 0
-    for score, tag in zip(predictions, targets):
-        if score < -0.05 and tag < 0:
-            prediction_vraies += 1
-        elif score >= -0.05 and score <= 0.05 and tag == 0 : 
-            prediction_vraies += 1
-        elif score > 0.05 and tag > 0:
-            prediction_vraies += 1
-    accuracy_rate = prediction_vraies / len(targets)
-    print(f"Pourcetage de reussite = {accuracy_rate*100}%")
-
-accuracy()
-
-
-
-
