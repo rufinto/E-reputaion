@@ -136,7 +136,7 @@ def Datasets(dtyp):
 
 #####################################################################################
 #creation du sac de token filtré et lemmatizé
-X_train, X_test, Y_train, Y_test = Datasets(dtyp = 1)
+X_train, X_test, Y_train, Y_test = Datasets(dtyp = 0)
 
 sac_de_mots = [] 
 for tweet in X_train:
