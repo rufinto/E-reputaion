@@ -58,15 +58,15 @@ Y =[analysis.sentiment[0] for analysis in analysis]
 
 
 # Division des données en ensembles d'entraînement et de test
-X_train, X_test, y_train, y_test = KNRegressor.X_train, KNRegressor.X_test, KNRegressor.Y_train, KNRegressor.Y_test
+X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, random_state=42)
 
 # Convertion des tweets en représentation TF-IDF
-#vectorizer = TfidfVectorizer()
+vectorizer = TfidfVectorizer()
 
 
 
-#X_train_tfidf = vectorizer.fit_transform(X_train)
-#X_test_tfidf = vectorizer.transform(X_test)
+X_train_tfidf = vectorizer.fit_transform(X_train)
+X_test_tfidf = vectorizer.transform(X_test)
 
 # Initialisation et entraînement du modèle RandomForest
 rf_regressor = RandomForestRegressor(n_estimators=100, random_state=42)
