@@ -2,44 +2,29 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LinearRegression
-from sklearn.pipeline import Pipeline
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error, r2_score, confusion_matrix, roc_curve, roc_auc_score, precision_recall_curve, recall_score, learning_curve
+from sklearn.metrics import mean_squared_error, r2_score, confusion_matrix, roc_curve, roc_auc_score, precision_recall_curve, recall_score
 from sklearn.preprocessing import label_binarize
+from sklearn.model_selection import learning_curve 
+from KNRegressor import X_train, X_test, Y_train, Y_test
+from KNRegressor import coordonnees_matrice
 
+X_test_final,X_train_final=coordonnees_matrice(X_test,X_train)
 
-
-
-
-
-
-X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, random_state=42)
-
-# Convertissez les tweets en représentation TF-IDF
-vectorizer = TfidfVectorizer()
-
-# Créez une instance de régression linéaire
 regressor = LinearRegression()
 
-# Créez un pipeline avec le vectorizer et le modèle de régression linéaire
-pipeline = Pipeline([
-    ('tfidf', vectorizer),
-    ('regression', regressor)
-])
-
 # Entraînez le modèle sur les données d'entraînement
-pipeline.fit(X_train, y_train)
+regressor.fit(X_train_final, Y_train)
 
-# Prédisez les étiquettes sur les données de test
-y_pred = pipeline.predict(X_test)
+# Prédisez les valeurs sur les données de test
+Y_pred = regressor.predict(X_test_final)
 
 # Évaluez les performances du modèle
-mse = mean_squared_error(y_test, y_pred)
-r2 = r2_score(y_test, y_pred)
+mse = mean_squared_error(Y_test, Y_pred)
+r2 = r2_score(Y_test, Y_pred)
 
-# Fonction pour classifier les valeurs en positif, neutre, négatif
+# Fonction pour classifier les valeurs en positif, neutre et négatif
 def classify(y):
     y_classified = []
     for value in y:
@@ -51,58 +36,58 @@ def classify(y):
             y_classified.append(0)  # Neutre
     return y_classified
 
-# Classifier y_pred et y_test
-y_pred_classified = classify(y_pred)
-y_test_classified = classify(y_test)
+# Classifier les prédictions et les valeurs réelles
+Y_pred_classified = classify(Y_pred)
+Y_test_classified = classify(Y_test)
 
 # Calculer le rappel pour chaque classe
-recall_pos = recall_score(y_test_classified, y_pred_classified, labels=[1], average='macro')
-recall_neutre = recall_score(y_test_classified, y_pred_classified, labels=[0], average='macro')
-recall_neg = recall_score(y_test_classified, y_pred_classified, labels=[-1], average='macro')
+recall_pos = recall_score(Y_test_classified, Y_pred_classified, labels=[1], average='macro')
+recall_neutre = recall_score(Y_test_classified, Y_pred_classified, labels=[0], average='macro')
+recall_neg = recall_score(Y_test_classified, Y_pred_classified, labels=[-1], average='macro')
 
-print(f"Rappel pour les classes positives: {recall_pos}")
-print(f"Rappel pour les classes neutres: {recall_neutre}")
-print(f"Rappel pour les classes négatives: {recall_neg}")
-print("Mean Squared Error:", mse)
-print("R-squared:", r2)
+print(f"Rappel pour la classe positive: {recall_pos}")
+print(f"Rappel pour la classe neutre: {recall_neutre}")
+print(f"Rappel pour la classe négative: {recall_neg}")
+print("Erreur Quadratique Moyenne (MSE):", mse)
+print("Coefficient de Détermination (R-squared):", r2)
 
 # Tracer l'histogramme des prédictions
 plt.figure(figsize=(10, 5))
-plt.hist(y_pred, bins=20, color='blue', alpha=0.7)
-plt.title('Histogramme des prédictions')
-plt.xlabel('Valeurs prédites')
+plt.hist(Y_pred, bins=20, color='blue', alpha=0.7)
+plt.title('Histogramme des Prédictions')
+plt.xlabel('Valeurs Prédites')
 plt.ylabel('Fréquence')
 plt.grid(True)
 plt.show()
 
-# Tracer l'histogramme des valeurs réelles (y_labellisé)
+# Tracer l'histogramme des valeurs réelles (Y_test)
 plt.figure(figsize=(10, 5))
-plt.hist(y_test, bins=20, color='green', alpha=0.7)
-plt.title('Histogramme des valeurs réelles (y labellisé)')
-plt.xlabel('Valeurs réelles')
+plt.hist(Y_test, bins=20, color='green', alpha=0.7)
+plt.title('Histogramme des Valeurs Réelles (Y_test)')
+plt.xlabel('Valeurs Réelles')
 plt.ylabel('Fréquence')
 plt.grid(True)
 plt.show()
 
 # Matrice de Confusion
-conf_matrix = confusion_matrix(y_test_classified, y_pred_classified)
+conf_matrix = confusion_matrix(Y_test_classified, Y_pred_classified)
 sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues')
 plt.xlabel('Prédictions')
 plt.ylabel('Valeurs Réelles')
 plt.title('Matrice de Confusion')
 plt.show()
 
-# Binariser les étiquettes pour la courbe ROC et AUC
-y_test_binarized = label_binarize(y_test_classified, classes=[-1, 0, 1])
-y_pred_binarized = label_binarize(y_pred_classified, classes=[-1, 0, 1])
+# Binariser les étiquettes pour la courbe ROC et l'AUC
+Y_test_binarized = label_binarize(Y_test_classified, classes=[-1, 0, 1])
+Y_pred_binarized = label_binarize(Y_pred_classified, classes=[-1, 0, 1])
 
 # Calculer la courbe ROC et l'AUC pour chaque classe
 fpr = dict()
 tpr = dict()
 roc_auc = dict()
 for i in range(3):
-    fpr[i], tpr[i], _ = roc_curve(y_test_binarized[:, i], y_pred_binarized[:, i])
-    roc_auc[i] = roc_auc_score(y_test_binarized[:, i], y_pred_binarized[:, i])
+    fpr[i], tpr[i], _ = roc_curve(Y_test_binarized[:, i], Y_pred_binarized[:, i])
+    roc_auc[i] = roc_auc_score(Y_test_binarized[:, i], Y_pred_binarized[:, i])
 
 # Tracer toutes les courbes ROC
 plt.figure()
@@ -112,17 +97,17 @@ for i, color in zip(range(3), colors):
 plt.plot([0, 1], [0, 1], color='grey', lw=2, linestyle='--')
 plt.xlim([0.0, 1.0])
 plt.ylim([0.0, 1.05])
-plt.xlabel('False Positive Rate')
-plt.ylabel('True Positive Rate')
-plt.title('Receiver Operating Characteristic (ROC)')
+plt.xlabel('Taux de Faux Positifs')
+plt.ylabel('Taux de Vrais Positifs')
+plt.title('Courbe ROC')
 plt.legend(loc="lower right")
 plt.show()
 
-# Courbe Precision-Recall
+# Courbe de Précision-Rappel
 precision = dict()
 recall = dict()
 for i in range(3):
-    precision[i], recall[i], _ = precision_recall_curve(y_test_binarized[:, i], y_pred_binarized[:, i])
+    precision[i], recall[i], _ = precision_recall_curve(Y_test_binarized[:, i], Y_pred_binarized[:, i])
 
 # Tracer toutes les courbes Precision-Recall
 plt.figure()
@@ -134,8 +119,8 @@ plt.title('Courbe Precision-Recall')
 plt.legend(loc="lower left")
 plt.show()
 
-# Graphiques des Erreurs
-errors = y_test - y_pred
+# Graphique de la distribution des erreurs
+errors = Y_test - Y_pred
 
 plt.hist(errors, bins=20)
 plt.xlabel('Erreur')
@@ -144,7 +129,7 @@ plt.title('Distribution des Erreurs')
 plt.show()
 
 # Courbe d'apprentissage
-train_sizes, train_scores, test_scores = learning_curve(pipeline, X_train, y_train, cv=5)
+train_sizes, train_scores, test_scores = learning_curve(regressor, X_train, Y_train, cv=5)
 
 train_mean = np.mean(train_scores, axis=1)
 train_std = np.std(train_scores, axis=1)
@@ -162,3 +147,10 @@ plt.ylabel('Score')
 plt.title('Courbe d\'apprentissage')
 plt.legend(loc='best')
 plt.show()
+
+# Afficher les coefficients du modèle
+coefficients = regressor.coef_
+intercept = regressor.intercept_
+
+print(f"Coefficients: {coefficients}")
+print(f"Intercept: {intercept}")
